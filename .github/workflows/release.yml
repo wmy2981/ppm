@@ -1,0 +1,67 @@
+name: release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Read VERSION
+        id: ver
+        shell: pwsh
+        run: |
+          $v = (Get-Content VERSION -Raw).Trim()
+          "version=$v" | Out-File -Append $env:GITHUB_OUTPUT
+          "VERSION is $v"
+
+      - name: Skip if tag already exists
+        id: check
+        shell: pwsh
+        run: |
+          $v = "${{ steps.ver.outputs.version }}"
+          git fetch --tags origin 2>$null
+          $exists = git tag -l "v$v"
+          if ($exists) {
+            "skip=true" | Out-File -Append $env:GITHUB_OUTPUT
+            "tag v$v already exists - skipping release"
+          } else {
+            "skip=false" | Out-File -Append $env:GITHUB_OUTPUT
+            "tag v$v is new - will release"
+          }
+
+      - name: Build
+        if: steps.check.outputs.skip == 'false'
+        shell: pwsh
+        run: |
+          $version = "${{ steps.ver.outputs.version }}"
+          foreach ($arch in "amd64", "arm64", "386") {
+            $env:GOARCH = $arch
+            $out = "ppm-v$version-windows-$arch.exe"
+            go build -trimpath -ldflags "-s -w -X main.version=$version" -o "$out" ./cmd/ppm
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+          }
+
+      - name: Create tag and release
+        if: steps.check.outputs.skip == 'false'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = "${{ steps.ver.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v$version"
+          git push origin "v$version"
+          gh release create "v$version" ppm-v$version-windows-*.exe --title "v$version" --generate-notes
