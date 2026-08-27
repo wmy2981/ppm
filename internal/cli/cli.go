@@ -173,15 +173,24 @@ func openStore() (*store.Store, map[string]string, []netsh.Rule, error) {
 	return st, notes, rules, nil
 }
 
-// leftoverFlags extracts --key value pairs that urfave/cli missed because they
-// appeared after positional arguments. Returns only the positionals (non-flag
-// args) and a map of extracted flag values. Boolean flags (no value) are set to
-// "true".
+// leftoverFlags extracts --key/-k value pairs that urfave/cli missed because
+// they appeared after positional arguments. flagNames contains the known flag
+// long names; their single-char aliases (e.g. "l" for "listen") are mapped
+// automatically. Returns positionals and a map keyed by the long flag name.
 func leftoverFlags(args []string, flagNames ...string) (positionals []string, flags map[string]string) {
-	known := make(map[string]bool, len(flagNames))
+	// Build lookup: both long and short names map to the canonical long name.
+	alias := map[string]string{"listen": "l", "connect": "c", "note": "n", "json": "j"}
+	known := make(map[string]bool, len(flagNames)*2)
+	canonical := make(map[string]string, len(flagNames)*2)
 	for _, n := range flagNames {
 		known[n] = true
+		canonical[n] = n
+		if short, ok := alias[n]; ok {
+			known[short] = true
+			canonical[short] = n
+		}
 	}
+
 	flags = make(map[string]string)
 	for i := 0; i < len(args); {
 		var name string
@@ -196,11 +205,12 @@ func leftoverFlags(args []string, flagNames ...string) (positionals []string, fl
 			continue
 		}
 		if known[name] {
+			key := canonical[name]
 			if i+1 < len(args) && !strings.HasPrefix(args[i+1], "-") {
-				flags[name] = args[i+1]
+				flags[key] = args[i+1]
 				i += 2
 			} else {
-				flags[name] = "true"
+				flags[key] = "true"
 				i++
 			}
 		} else {
