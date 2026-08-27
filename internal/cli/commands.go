@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -211,26 +212,41 @@ func editAction(c *cli.Context) error {
 
 func deleteAction(c *cli.Context) error {
 	if c.NArg() < 1 {
-		return fmt.Errorf("usage: ppm delete <listen>")
-	}
-	addr, port, err := parseListenArg(c.Args().First())
-	if err != nil {
-		return err
+		return fmt.Errorf("usage: ppm delete <listen> [<listen> ...]")
 	}
 	st, notes, rules, err := openStore()
 	if err != nil {
 		return err
 	}
-	r := findRule(rules, addr, port)
-	if r == nil {
-		return fmt.Errorf("no rule found for %s", addr+":"+port)
+
+	var errs []string
+	deleted := 0
+	for i := 0; i < c.NArg(); i++ {
+		addr, port, err := parseListenArg(c.Args().Get(i))
+		if err != nil {
+			errs = append(errs, err.Error())
+			continue
+		}
+		r := findRule(rules, addr, port)
+		if r == nil {
+			errs = append(errs, fmt.Sprintf("no rule found for %s", addr+":"+port))
+			continue
+		}
+		if err := netsh.DeleteRule(*r); err != nil {
+			errs = append(errs, err.Error())
+			continue
+		}
+		delete(notes, r.Key())
+		deleted++
+		fmt.Printf("%s Deleted rule: %s\n", styleSuccess.Render("✓"), r.Key())
 	}
-	if err := netsh.DeleteRule(*r); err != nil {
-		return err
+
+	if deleted > 0 {
+		_ = st.SaveNotes(notes)
 	}
-	delete(notes, r.Key())
-	_ = st.SaveNotes(notes)
-	fmt.Printf("%s Deleted rule: %s\n", styleSuccess.Render("✓"), r.Key())
+	if len(errs) > 0 {
+		return fmt.Errorf("%s", strings.Join(errs, "\n"))
+	}
 	return nil
 }
 

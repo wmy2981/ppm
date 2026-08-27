@@ -85,9 +85,10 @@ var editCmd = &cli.Command{
 }
 
 var deleteCmd = &cli.Command{
-	Name:   "delete",
-	Usage:  "Delete a portproxy rule",
-	Action: deleteAction,
+	Name:      "delete",
+	Usage:     "Delete one or more portproxy rules",
+	ArgsUsage: "<listen> [<listen> ...]",
+	Action:    deleteAction,
 }
 
 var testCmd = &cli.Command{
