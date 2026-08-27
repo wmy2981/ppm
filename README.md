@@ -24,8 +24,8 @@ Invoke-WebRequest -Uri "https://github.com/wmy2981/ppm/releases/download/v0.1.0/
 
 **自行构建：**
 
-```
-go build -o ppm.exe ./cmd/ppm
+```powershell
+powershell -File .\scripts\build.ps1
 ```
 
 ## 使用
