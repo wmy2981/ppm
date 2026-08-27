@@ -46,14 +46,45 @@ func listAction(c *cli.Context) error {
 
 func addAction(c *cli.Context) error {
 	requireElevate(c)
-	lAddr, lPort, err := parseListenArg(c.String("listen"))
+
+	// Resolve listen: positional[0] > --listen flag
+	var listenArg string
+	if c.NArg() > 0 {
+		listenArg = c.Args().Get(0)
+	} else {
+		listenArg = c.String("listen")
+	}
+	if listenArg == "" {
+		return fmt.Errorf("usage: ppm add <listen> <connect> [note]\n       ppm add --listen <addr:port> --connect <addr:port> [--note <text>]")
+	}
+	lAddr, lPort, err := parseListenArg(listenArg)
 	if err != nil {
 		return err
 	}
-	cAddr, cPort, err := parseListenArg(c.String("connect"))
+
+	// Resolve connect: positional[1] > --connect flag
+	var connectArg string
+	if c.NArg() > 1 {
+		connectArg = c.Args().Get(1)
+	} else {
+		connectArg = c.String("connect")
+	}
+	if connectArg == "" {
+		return fmt.Errorf("connect address is required")
+	}
+	cAddr, cPort, err := parseListenArg(connectArg)
 	if err != nil {
 		return err
 	}
+
+	// Resolve note: positional[2] > --note flag
+	var note string
+	if c.NArg() > 2 {
+		note = c.Args().Get(2)
+	} else {
+		note = c.String("note")
+	}
+
 	r := netsh.Rule{
 		ListenAddr:  lAddr,
 		ListenPort:  lPort,
@@ -63,7 +94,7 @@ func addAction(c *cli.Context) error {
 	if err := netsh.AddRule(r); err != nil {
 		return err
 	}
-	if note := c.String("note"); note != "" {
+	if note != "" {
 		st, err := store.Open()
 		if err == nil {
 			notes, _ := st.LoadNotes()
@@ -80,13 +111,16 @@ func addAction(c *cli.Context) error {
 
 func editAction(c *cli.Context) error {
 	requireElevate(c)
+
+	// Resolve origin listen: positional[0] (required)
 	if c.NArg() < 1 {
-		return fmt.Errorf("usage: ppm edit <listen> --connect <addr:port> [--note <text>]")
+		return fmt.Errorf("usage: ppm edit <originlisten> [<listen>] [<connect>] [note]\n       ppm edit <listen> --connect <addr:port> [--note <text>]")
 	}
-	addr, port, err := parseListenArg(c.Args().First())
+	addr, port, err := parseListenArg(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
+
 	st, notes, rules, err := openStore()
 	if err != nil {
 		return err
@@ -95,15 +129,14 @@ func editAction(c *cli.Context) error {
 	if old == nil {
 		return fmt.Errorf("no rule found for %s", addr+":"+port)
 	}
-	newConnect := c.String("connect")
-	if newConnect == "" {
-		newConnect = old.Target()
+
+	// Resolve new listen: positional[1] > --listen flag > original
+	var newListen string
+	if c.NArg() > 1 {
+		newListen = c.Args().Get(1)
+	} else {
+		newListen = c.String("listen")
 	}
-	cAddr, cPort, err := parseListenArg(newConnect)
-	if err != nil {
-		return err
-	}
-	newListen := c.String("listen")
 	var newAddr, newPort string
 	if newListen != "" {
 		newAddr, newPort, err = parseListenArg(newListen)
@@ -113,10 +146,33 @@ func editAction(c *cli.Context) error {
 	} else {
 		newAddr, newPort = old.ListenAddr, old.ListenPort
 	}
-	newNote := c.String("note")
+
+	// Resolve new connect: positional[2] > --connect flag > original
+	var newConnect string
+	if c.NArg() > 2 {
+		newConnect = c.Args().Get(2)
+	} else {
+		newConnect = c.String("connect")
+	}
+	if newConnect == "" {
+		newConnect = old.Target()
+	}
+	cAddr, cPort, err := parseListenArg(newConnect)
+	if err != nil {
+		return err
+	}
+
+	// Resolve new note: positional[3] > --note flag > original
+	var newNote string
+	if c.NArg() > 3 {
+		newNote = c.Args().Get(3)
+	} else {
+		newNote = c.String("note")
+	}
 	if newNote == "" {
 		newNote = notes[old.Key()]
 	}
+
 	if err := netsh.DeleteRule(*old); err != nil {
 		return fmt.Errorf("delete old rule: %w", err)
 	}

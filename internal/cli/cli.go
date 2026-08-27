@@ -51,11 +51,12 @@ var listCmd = &cli.Command{
 }
 
 var addCmd = &cli.Command{
-	Name:  "add",
-	Usage: "Add a new portproxy rule",
+	Name:      "add",
+	Usage:     "Add a new portproxy rule",
+	ArgsUsage: "<listen> <connect> [note]",
 	Flags: []cli.Flag{
-		&cli.StringFlag{Name: "listen", Required: true, Usage: "Listen address and port (e.g. :8080 or 192.168.1.1:8080)"},
-		&cli.StringFlag{Name: "connect", Required: true, Usage: "Connect address and port (e.g. 10.0.0.1:80)"},
+		&cli.StringFlag{Name: "listen", Usage: "Listen address and port (e.g. :8080 or 192.168.1.1:8080)"},
+		&cli.StringFlag{Name: "connect", Usage: "Connect address and port (e.g. 10.0.0.1:80)"},
 		&cli.StringFlag{Name: "note", Usage: "Optional note for this rule"},
 		&cli.BoolFlag{Name: "elevate", Usage: "Request admin privileges via UAC before executing"},
 	},
@@ -63,8 +64,9 @@ var addCmd = &cli.Command{
 }
 
 var editCmd = &cli.Command{
-	Name:  "edit",
-	Usage: "Edit an existing portproxy rule (delete + recreate)",
+	Name:      "edit",
+	Usage:     "Edit an existing portproxy rule (delete + recreate)",
+	ArgsUsage: "<originlisten> [<listen>] [<connect>] [note]",
 	Flags: []cli.Flag{
 		&cli.StringFlag{Name: "connect", Usage: "New connect address and port"},
 		&cli.StringFlag{Name: "note", Usage: "New note"},
