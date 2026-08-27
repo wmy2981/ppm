@@ -45,14 +45,18 @@ func listAction(c *cli.Context) error {
 }
 
 func addAction(c *cli.Context) error {
-	requireElevate(c)
+	// Extract positionals and leftover flags from c.Args() (handles flags after positional args).
+	positionals, extra := leftoverFlags(c.Args().Slice(), "listen", "connect", "note", "elevate")
+	requireElevate(c, extra)
 
-	// Resolve listen: positional[0] > --listen flag
+	// Resolve listen: positional[0] > --listen flag > extra --listen
 	var listenArg string
-	if c.NArg() > 0 {
-		listenArg = c.Args().Get(0)
-	} else {
-		listenArg = c.String("listen")
+	if len(positionals) > 0 {
+		listenArg = positionals[0]
+	} else if v := c.String("listen"); v != "" {
+		listenArg = v
+	} else if v := extra["listen"]; v != "" {
+		listenArg = v
 	}
 	if listenArg == "" {
 		return fmt.Errorf("usage: ppm add <listen> <connect> [note]\n       ppm add --listen <addr:port> --connect <addr:port> [--note <text>]")
@@ -62,12 +66,14 @@ func addAction(c *cli.Context) error {
 		return err
 	}
 
-	// Resolve connect: positional[1] > --connect flag
+	// Resolve connect: positional[1] > --connect flag > extra --connect
 	var connectArg string
-	if c.NArg() > 1 {
-		connectArg = c.Args().Get(1)
-	} else {
-		connectArg = c.String("connect")
+	if len(positionals) > 1 {
+		connectArg = positionals[1]
+	} else if v := c.String("connect"); v != "" {
+		connectArg = v
+	} else if v := extra["connect"]; v != "" {
+		connectArg = v
 	}
 	if connectArg == "" {
 		return fmt.Errorf("connect address is required")
@@ -77,12 +83,14 @@ func addAction(c *cli.Context) error {
 		return err
 	}
 
-	// Resolve note: positional[2] > --note flag
+	// Resolve note: positional[2] > --note flag > extra --note
 	var note string
-	if c.NArg() > 2 {
-		note = c.Args().Get(2)
-	} else {
-		note = c.String("note")
+	if len(positionals) > 2 {
+		note = positionals[2]
+	} else if v := c.String("note"); v != "" {
+		note = v
+	} else if v := extra["note"]; v != "" {
+		note = v
 	}
 
 	r := netsh.Rule{
@@ -110,9 +118,7 @@ func addAction(c *cli.Context) error {
 }
 
 func editAction(c *cli.Context) error {
-	requireElevate(c)
-
-	// Resolve origin listen: positional[0] (required)
+	// Resolve origin listen: first raw arg (required)
 	if c.NArg() < 1 {
 		return fmt.Errorf("usage: ppm edit <originlisten> [<listen>] [<connect>] [note]\n       ppm edit <listen> --connect <addr:port> [--note <text>]")
 	}
@@ -130,12 +136,20 @@ func editAction(c *cli.Context) error {
 		return fmt.Errorf("no rule found for %s", addr+":"+port)
 	}
 
-	// Resolve new listen: positional[1] > --listen flag > original
+	// Extract positionals and leftover flags from ALL args (handles flags after positional args).
+	positionals, extra := leftoverFlags(c.Args().Slice(), "listen", "connect", "note", "elevate")
+	requireElevate(c, extra)
+	// positionals[0] is originlisten (already parsed above); remaining are new values.
+	positionals = positionals[1:]
+
+	// Resolve new listen: positional[0] > --listen flag > extra --listen > original
 	var newListen string
-	if c.NArg() > 1 {
-		newListen = c.Args().Get(1)
-	} else {
-		newListen = c.String("listen")
+	if len(positionals) > 0 {
+		newListen = positionals[0]
+	} else if v := c.String("listen"); v != "" {
+		newListen = v
+	} else if v := extra["listen"]; v != "" {
+		newListen = v
 	}
 	var newAddr, newPort string
 	if newListen != "" {
@@ -147,12 +161,14 @@ func editAction(c *cli.Context) error {
 		newAddr, newPort = old.ListenAddr, old.ListenPort
 	}
 
-	// Resolve new connect: positional[2] > --connect flag > original
+	// Resolve new connect: positional[1] > --connect flag > extra --connect > original
 	var newConnect string
-	if c.NArg() > 2 {
-		newConnect = c.Args().Get(2)
-	} else {
-		newConnect = c.String("connect")
+	if len(positionals) > 1 {
+		newConnect = positionals[1]
+	} else if v := c.String("connect"); v != "" {
+		newConnect = v
+	} else if v := extra["connect"]; v != "" {
+		newConnect = v
 	}
 	if newConnect == "" {
 		newConnect = old.Target()
@@ -162,12 +178,14 @@ func editAction(c *cli.Context) error {
 		return err
 	}
 
-	// Resolve new note: positional[3] > --note flag > original
+	// Resolve new note: positional[2] > --note flag > extra --note > original
 	var newNote string
-	if c.NArg() > 3 {
-		newNote = c.Args().Get(3)
-	} else {
-		newNote = c.String("note")
+	if len(positionals) > 2 {
+		newNote = positionals[2]
+	} else if v := c.String("note"); v != "" {
+		newNote = v
+	} else if v := extra["note"]; v != "" {
+		newNote = v
 	}
 	if newNote == "" {
 		newNote = notes[old.Key()]

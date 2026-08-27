@@ -164,10 +164,55 @@ func openStore() (*store.Store, map[string]string, []netsh.Rule, error) {
 	return st, notes, rules, nil
 }
 
-func requireElevate(c *cli.Context) {
+func requireElevate(c *cli.Context, extra ...map[string]string) {
 	if c.Bool("elevate") {
 		elevate.ElevateOrExit()
+		return
 	}
+	for _, m := range extra {
+		if m["elevate"] == "true" {
+			elevate.ElevateOrExit()
+			return
+		}
+	}
+}
+
+// leftoverFlags extracts --key value pairs that urfave/cli missed because they
+// appeared after positional arguments. Returns only the positionals (non-flag
+// args) and a map of extracted flag values. Boolean flags (no value) are set to
+// "true".
+func leftoverFlags(args []string, flagNames ...string) (positionals []string, flags map[string]string) {
+	known := make(map[string]bool, len(flagNames))
+	for _, n := range flagNames {
+		known[n] = true
+	}
+	flags = make(map[string]string)
+	for i := 0; i < len(args); {
+		if strings.HasPrefix(args[i], "--") {
+			name := strings.TrimPrefix(args[i], "--")
+			if name == "" {
+				positionals = append(positionals, args[i])
+				i++
+				continue
+			}
+			if known[name] {
+				if i+1 < len(args) && !strings.HasPrefix(args[i+1], "--") {
+					flags[name] = args[i+1]
+					i += 2
+				} else {
+					flags[name] = "true"
+					i++
+				}
+			} else {
+				positionals = append(positionals, args[i])
+				i++
+			}
+		} else {
+			positionals = append(positionals, args[i])
+			i++
+		}
+	}
+	return
 }
 
 func printTable(rules []netsh.Rule, notes map[string]string) {
