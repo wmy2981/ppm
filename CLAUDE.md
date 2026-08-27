@@ -19,7 +19,7 @@ go build -trimpath -ldflags "-s -w -X main.version=$(cat VERSION)" -o ppm.exe ./
 ./scripts/build.ps1
 ```
 
-No test suite exists (`_test.go` files are absent). No linter config is present.
+No linter config is present.
 
 ## CLI Commands
 
@@ -38,13 +38,15 @@ Use `ppm <command> --help` for detailed usage.
 ## Architecture
 
 ```
-cmd/ppm/main.go           — Entrypoint; routes to TUI or CLI based on args
+cmd/ppm/main.go            — Entrypoint; routes to TUI or CLI based on args
 internal/cli/              — urfave/cli app definition and command handlers (CLI mode)
+internal/cli/cli_test.go   — Unit tests for parseListenArg, leftoverFlags, findRule
 internal/elevate/          — UAC self-elevation via ShellExecuteW
 internal/netsh/            — netsh/netstat command wrappers; all commands have 10s timeouts
 internal/store/            — %APPDATA%\ppm persistence (notes.json + backup imports)
 internal/ui/model.go       — Bubble Tea TUI model (list, form, confirm views)
 internal/ui/form.go        — Form, import, and delete-confirm sub-views
+.github/workflows/         — GitHub Actions
 ```
 
 Key behaviors:
