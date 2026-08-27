@@ -39,23 +39,27 @@ func App(v string) *cli.App {
 			exportCmd,
 			importCmd,
 			tuiCmd,
-			{
-				Name:  "version",
-				Usage: "Print the version number",
-				Action: func(c *cli.Context) error {
-					fmt.Println("ppm version", version)
-					return nil
-				},
-			},
+			versionCmd,
 		},
 	}
 }
 
+var versionCmd = &cli.Command{
+	Name:    "version",
+	Aliases: []string{"ver"},
+	Usage:   "Print the version number",
+	Action: func(c *cli.Context) error {
+		fmt.Println("ppm version", version)
+		return nil
+	},
+}
+
 var listCmd = &cli.Command{
-	Name:  "list",
-	Usage: "List all portproxy rules",
+	Name:    "list",
+	Aliases: []string{"ls"},
+	Usage:   "List all portproxy rules",
 	Flags: []cli.Flag{
-		&cli.BoolFlag{Name: "json", Usage: "Output as JSON"},
+		&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Usage: "Output as JSON"},
 	},
 	Action: listAction,
 }
@@ -65,9 +69,9 @@ var addCmd = &cli.Command{
 	Usage:     "Add a new portproxy rule",
 	ArgsUsage: "<listen> <connect> [note]",
 	Flags: []cli.Flag{
-		&cli.StringFlag{Name: "listen", Usage: "Listen address and port (e.g. :8080 or 192.168.1.1:8080)"},
-		&cli.StringFlag{Name: "connect", Usage: "Connect address and port (e.g. 10.0.0.1:80)"},
-		&cli.StringFlag{Name: "note", Usage: "Optional note for this rule"},
+		&cli.StringFlag{Name: "listen", Aliases: []string{"l"}, Usage: "Listen address and port (e.g. :8080 or 192.168.1.1:8080)"},
+		&cli.StringFlag{Name: "connect", Aliases: []string{"c"}, Usage: "Connect address and port (e.g. 10.0.0.1:80)"},
+		&cli.StringFlag{Name: "note", Aliases: []string{"n"}, Usage: "Optional note for this rule"},
 	},
 	Action: addAction,
 }
@@ -77,15 +81,16 @@ var editCmd = &cli.Command{
 	Usage:     "Edit an existing portproxy rule (delete + recreate)",
 	ArgsUsage: "<originlisten> [<listen>] [<connect>] [note]",
 	Flags: []cli.Flag{
-		&cli.StringFlag{Name: "connect", Usage: "New connect address and port"},
-		&cli.StringFlag{Name: "note", Usage: "New note"},
-		&cli.StringFlag{Name: "listen", Usage: "New listen address and port"},
+		&cli.StringFlag{Name: "connect", Aliases: []string{"c"}, Usage: "New connect address and port"},
+		&cli.StringFlag{Name: "note", Aliases: []string{"n"}, Usage: "New note"},
+		&cli.StringFlag{Name: "listen", Aliases: []string{"l"}, Usage: "New listen address and port"},
 	},
 	Action: editAction,
 }
 
 var deleteCmd = &cli.Command{
 	Name:      "delete",
+	Aliases:   []string{"del"},
 	Usage:     "Delete one or more portproxy rules",
 	ArgsUsage: "<listen> [<listen> ...]",
 	Action:    deleteAction,
@@ -96,7 +101,7 @@ var testCmd = &cli.Command{
 	Usage: "Test connectivity to a rule's target",
 	Flags: []cli.Flag{
 		&cli.BoolFlag{Name: "all", Usage: "Test all rules"},
-		&cli.BoolFlag{Name: "json", Usage: "Output as JSON"},
+		&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Usage: "Output as JSON"},
 	},
 	Action: testAction,
 }
@@ -179,23 +184,23 @@ func leftoverFlags(args []string, flagNames ...string) (positionals []string, fl
 	}
 	flags = make(map[string]string)
 	for i := 0; i < len(args); {
-		if strings.HasPrefix(args[i], "--") {
-			name := strings.TrimPrefix(args[i], "--")
-			if name == "" {
-				positionals = append(positionals, args[i])
-				i++
-				continue
-			}
-			if known[name] {
-				if i+1 < len(args) && !strings.HasPrefix(args[i+1], "--") {
-					flags[name] = args[i+1]
-					i += 2
-				} else {
-					flags[name] = "true"
-					i++
-				}
+		var name string
+		switch {
+		case strings.HasPrefix(args[i], "--") && len(args[i]) > 2:
+			name = args[i][2:]
+		case strings.HasPrefix(args[i], "-") && len(args[i]) == 2:
+			name = args[i][1:]
+		default:
+			positionals = append(positionals, args[i])
+			i++
+			continue
+		}
+		if known[name] {
+			if i+1 < len(args) && !strings.HasPrefix(args[i+1], "-") {
+				flags[name] = args[i+1]
+				i += 2
 			} else {
-				positionals = append(positionals, args[i])
+				flags[name] = "true"
 				i++
 			}
 		} else {
