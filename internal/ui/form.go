@@ -33,7 +33,7 @@ func (m model) updateImport(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			detail = "; " + strings.Join(warnings[:minInt(len(warnings), 2)], "; ")
 		}
 		m.setStatus(msgInfo, "import: %d created, %d skipped, %d failed%s", res.Created, res.Skipped, res.Failed, detail)
-		return m, loadRules()
+		return m, loadRules(m.store)
 	}
 	var cmd tea.Cmd
 	m.importInput, cmd = m.importInput.Update(msg)

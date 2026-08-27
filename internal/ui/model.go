@@ -36,6 +36,7 @@ const (
 type rulesLoadedMsg struct {
 	rules     []netsh.Rule
 	listening map[string]bool
+	notes     map[string]string
 	err       error
 }
 
@@ -201,7 +202,7 @@ func (m *model) setStatus(kind int, format string, args ...any) {
 
 // Commands ------------------------------------------------------------------
 
-func loadRules() tea.Cmd {
+func loadRules(st Store) tea.Cmd {
 	return func() tea.Msg {
 		rules, err := netsh.ListRules()
 		if err != nil {
@@ -211,7 +212,11 @@ func loadRules() tea.Cmd {
 		if err != nil {
 			return rulesLoadedMsg{rules: rules, err: fmt.Errorf("netstat: %w", err)}
 		}
-		return rulesLoadedMsg{rules: rules, listening: lst}
+		notes, _ := st.LoadNotes()
+		if notes == nil {
+			notes = map[string]string{}
+		}
+		return rulesLoadedMsg{rules: rules, listening: lst, notes: notes}
 	}
 }
 
@@ -224,7 +229,7 @@ func testCmd(key string, r netsh.Rule) tea.Cmd {
 
 // Init / Update -------------------------------------------------------------
 
-func (m model) Init() tea.Cmd { return loadRules() }
+func (m model) Init() tea.Cmd { return loadRules(m.store) }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
@@ -254,15 +259,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.listenCount = countListening(msg.rules, msg.listening)
 		m.rules = msg.rules
 		m.listening = msg.listening
-		if m.notes == nil {
-			m.notes = map[string]string{}
-		}
+		m.notes = msg.notes
 		m.syncRows()
 		return m, nil
 
 	case opDoneMsg:
 		m.view = viewList
-		cmds := []tea.Cmd{loadRules()}
+		cmds := []tea.Cmd{loadRules(m.store)}
 		if err := m.store.SaveNotes(m.notes); err != nil {
 			m.setStatus(msgError, "save notes: %v", err)
 		}
@@ -272,7 +275,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// stay on the current view (form/import) so the user can fix the
 		// input; only refresh the list in case a partial change landed
 		m.setStatus(msgError, "%s", msg.err.Error())
-		return m, loadRules()
+		return m, loadRules(m.store)
 
 	case saveNotesMsg:
 		if msg.err != nil {
@@ -451,7 +454,7 @@ func (m model) updateList(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "end", "G":
 		m.tbl.GotoBottom()
 	case "r":
-		return m, loadRules()
+		return m, loadRules(m.store)
 	case "a":
 		m.openForm(-1)
 	case "e", "enter":
