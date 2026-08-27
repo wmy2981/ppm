@@ -2,9 +2,9 @@ package cli
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -76,7 +76,7 @@ func addAction(c *cli.Context) error {
 		connectArg = v
 	}
 	if connectArg == "" {
-		return fmt.Errorf("connect address is required")
+		return errors.New(failf("connect address is required"))
 	}
 	cAddr, cPort, err := parseListenArg(connectArg)
 	if err != nil {
@@ -113,7 +113,7 @@ func addAction(c *cli.Context) error {
 			_ = st.SaveNotes(notes)
 		}
 	}
-	fmt.Printf("%s Added rule: %s -> %s\n", styleSuccess.Render("✓"), r.Key(), r.Target())
+	fmt.Println(successf("Added rule: %s -> %s", r.Key(), r.Target()))
 	return nil
 }
 
@@ -133,7 +133,7 @@ func editAction(c *cli.Context) error {
 	}
 	old := findRule(rules, addr, port)
 	if old == nil {
-		return fmt.Errorf("no rule found for %s", addr+":"+port)
+		return errors.New(failf("no rule found for %s", addr+":"+port))
 	}
 
 	// Extract positionals and leftover flags from ALL args (handles flags after positional args).
@@ -191,7 +191,7 @@ func editAction(c *cli.Context) error {
 	}
 
 	if err := netsh.DeleteRule(*old); err != nil {
-		return fmt.Errorf("delete old rule: %w", err)
+		return errors.New(failf("delete old rule: %v", err))
 	}
 	created := netsh.Rule{
 		ListenAddr:  newAddr,
@@ -201,12 +201,12 @@ func editAction(c *cli.Context) error {
 	}
 	if err := netsh.AddRule(created); err != nil {
 		_ = netsh.AddRule(*old)
-		return fmt.Errorf("create new rule: %w (old rule restored)", err)
+		return errors.New(failf("create new rule: %v (old rule restored)", err))
 	}
 	delete(notes, old.Key())
 	notes[created.Key()] = newNote
 	_ = st.SaveNotes(notes)
-	fmt.Printf("%s Edited rule: %s -> %s\n", styleSuccess.Render("✓"), old.Key(), created.Key())
+	fmt.Println(successf("Edited rule: %s -> %s", old.Key(), created.Key()))
 	return nil
 }
 
@@ -238,14 +238,17 @@ func deleteAction(c *cli.Context) error {
 		}
 		delete(notes, r.Key())
 		deleted++
-		fmt.Printf("%s Deleted rule: %s\n", styleSuccess.Render("✓"), r.Key())
+		fmt.Println(successf("Deleted rule: %s", r.Key()))
 	}
 
 	if deleted > 0 {
 		_ = st.SaveNotes(notes)
 	}
 	if len(errs) > 0 {
-		return fmt.Errorf("%s", strings.Join(errs, "\n"))
+		for _, msg := range errs {
+			fmt.Fprintln(os.Stderr, failf("%s", msg))
+		}
+		return errors.New(failf("%d rule(s) failed to delete", len(errs)))
 	}
 	return nil
 }
@@ -265,7 +268,7 @@ func testAction(c *cli.Context) error {
 		}
 		r := findRule(rules, addr, port)
 		if r == nil {
-			return fmt.Errorf("no rule found for %s", addr+":"+port)
+			return errors.New(failf("no rule found for %s", addr+":"+port))
 		}
 		targets = []netsh.Rule{*r}
 	} else {
@@ -292,7 +295,7 @@ func testAction(c *cli.Context) error {
 		results = append(results, res)
 		if !c.Bool("json") {
 			if res.Error != "" {
-				fmt.Printf("%s -> %s: %s\n", res.Listen, res.Target, styleFail.Render("FAIL ("+res.Error+")"))
+				fmt.Printf("%s -> %s: %s\n", res.Listen, res.Target, failf("FAIL (%s)", res.Error))
 			} else {
 				fmt.Printf("%s -> %s: %s\n", res.Listen, res.Target, styleOK.Render("OK ("+res.Latency+")"))
 			}
@@ -336,14 +339,14 @@ func exportAction(c *cli.Context) error {
 		if err := os.WriteFile(output, data, 0o644); err != nil {
 			return err
 		}
-		fmt.Printf("%s Exported %d rules to %s\n", styleSuccess.Render("✓"), len(rules), output)
+		fmt.Println(successf("Exported %d rules to %s", len(rules), output))
 		return nil
 	}
 	path, err := st.Export(rules, notes, version)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%s Exported %d rules to %s\n", styleSuccess.Render("✓"), len(rules), path)
+	fmt.Println(successf("Exported %d rules to %s", len(rules), path))
 	return nil
 }
 
@@ -361,25 +364,25 @@ func importAction(c *cli.Context) error {
 	}
 	_ = st.SaveNotes(notes)
 	for _, w := range warnings {
-		fmt.Fprintln(os.Stderr, "warning:", w)
+		fmt.Fprintln(os.Stderr, warnf("%s", w))
 	}
-	fmt.Printf("%s Imported: %d created, %d skipped, %d failed\n", styleSuccess.Render("✓"), res.Created, res.Skipped, res.Failed)
+	fmt.Println(successf("Imported: %d created, %d skipped, %d failed", res.Created, res.Skipped, res.Failed))
 	return nil
 }
 
 func tuiAction(c *cli.Context) error {
 	st, err := store.Open()
 	if err != nil {
-		return fmt.Errorf("open data dir: %w", err)
+		return errors.New(failf("open data dir: %v", err))
 	}
 	notes, err := st.LoadNotes()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "warning: %v\n", err)
+		fmt.Fprintln(os.Stderr, warnf("load notes: %v", err))
 		notes = map[string]string{}
 	}
 	p := tea.NewProgram(ui.New(version, st, notes), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
-		return fmt.Errorf("tui: %w", err)
+		return errors.New(failf("tui: %v", err))
 	}
 	return nil
 }

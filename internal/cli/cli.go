@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -19,7 +20,20 @@ var (
 	styleOK      = lipgloss.NewStyle().Foreground(lipgloss.Color("10")) // green
 	styleFail    = lipgloss.NewStyle().Foreground(lipgloss.Color("9"))  // red
 	styleSuccess = lipgloss.NewStyle().Foreground(lipgloss.Color("10")) // green
+	styleWarn    = lipgloss.NewStyle().Foreground(lipgloss.Color("11")) // yellow
 )
+
+func successf(format string, args ...any) string {
+	return styleSuccess.Render("✓") + " " + fmt.Sprintf(format, args...)
+}
+
+func failf(format string, args ...any) string {
+	return styleFail.Render("✗") + " " + fmt.Sprintf(format, args...)
+}
+
+func warnf(format string, args ...any) string {
+	return styleWarn.Render("⚠") + " " + fmt.Sprintf(format, args...)
+}
 
 var version string
 
@@ -133,7 +147,7 @@ var tuiCmd = &cli.Command{
 func parseListenArg(s string) (addr, port string, err error) {
 	idx := strings.LastIndex(s, ":")
 	if idx < 0 {
-		return "", "", fmt.Errorf("invalid listen address %q: expected format :port or ip:port", s)
+		return "", "", errors.New(failf("invalid listen address %q: expected format :port or ip:port", s))
 	}
 	addr = s[:idx]
 	port = s[idx+1:]
@@ -141,7 +155,7 @@ func parseListenArg(s string) (addr, port string, err error) {
 		addr = "0.0.0.0"
 	}
 	if !netsh.IsPort(port) {
-		return "", "", fmt.Errorf("invalid port %q", port)
+		return "", "", errors.New(failf("invalid port %q", port))
 	}
 	return addr, port, nil
 }
