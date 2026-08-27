@@ -87,7 +87,7 @@ type model struct {
 type Store interface {
 	LoadNotes() (map[string]string, error)
 	SaveNotes(map[string]string) error
-	Export(rules []netsh.Rule, notes map[string]string) (string, error)
+	Export(rules []netsh.Rule, notes map[string]string, appVersion string) (string, error)
 	Import(path string, live []netsh.Rule, notes map[string]string) (*store.ImportResult, []string, error)
 	NewestBackup() string
 	Dir() string
@@ -495,7 +495,7 @@ func (m model) updateList(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.syncRows()
 		return m, tea.Batch(cmds...)
 	case "E":
-		path, err := m.store.Export(m.rules, m.notes)
+		path, err := m.store.Export(m.rules, m.notes, m.version)
 		if err != nil {
 			m.setStatus(msgError, "%s", "export failed: "+err.Error())
 			return m, nil

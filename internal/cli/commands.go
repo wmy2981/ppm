@@ -319,11 +319,11 @@ func exportAction(c *cli.Context) error {
 			Note string `json:"note,omitempty"`
 		}
 		doc := struct {
-			Version    int          `json:"version"`
+			Version    string       `json:"version"`
 			ExportedAt string       `json:"exported_at"`
 			Rules      []backupRule `json:"rules"`
 		}{
-			Version:    1,
+			Version:    version,
 			ExportedAt: time.Now().Format(time.RFC3339),
 		}
 		for _, r := range rules {
@@ -339,7 +339,7 @@ func exportAction(c *cli.Context) error {
 		fmt.Printf("%s Exported %d rules to %s\n", styleSuccess.Render("✓"), len(rules), output)
 		return nil
 	}
-	path, err := st.Export(rules, notes)
+	path, err := st.Export(rules, notes, version)
 	if err != nil {
 		return err
 	}

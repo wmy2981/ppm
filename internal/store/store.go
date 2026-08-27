@@ -73,17 +73,17 @@ func (s *Store) SaveNotes(notes map[string]string) error {
 
 // Export writes all current rules plus their notes to a dated JSON file and
 // returns its path.
-func (s *Store) Export(rules []netsh.Rule, notes map[string]string) (string, error) {
+func (s *Store) Export(rules []netsh.Rule, notes map[string]string, appVersion string) (string, error) {
 	type backupRule struct {
 		netsh.Rule
 		Note string `json:"note,omitempty"`
 	}
 	doc := struct {
-		Version    int          `json:"version"`
+		Version    string       `json:"version"`
 		ExportedAt string       `json:"exported_at"`
 		Rules      []backupRule `json:"rules"`
 	}{
-		Version:    1,
+		Version:    appVersion,
 		ExportedAt: time.Now().Format(time.RFC3339),
 	}
 	for _, r := range rules {
