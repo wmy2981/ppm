@@ -45,6 +45,55 @@ powershell -File .\scripts\build.ps1
 | `enter` | 编辑选中规则（同 `e`） |
 | `q` | 退出（y 确认 / n 取消） |
 
+### CLI 用法
+
+ppm 同时支持 TUI 和 CLI 模式。无参数运行 `ppm` 进入 TUI；传入子命令则以 CLI 模式运行。
+
+**子命令一览**
+
+| 命令 | 别名 | 说明 |
+|---|---|---|
+| `ppm list` | `ls` | 列出所有规则 |
+| `ppm add` | - | 新增规则 |
+| `ppm edit` | - | 编辑规则（删除旧规则 + 创建新规则） |
+| `ppm delete` | `del` | 删除一条或多条规则 |
+| `ppm test` | - | 测试规则连通性 |
+| `ppm export` | - | 导出全部规则和备注为 JSON 备份 |
+| `ppm import` | - | 从备份文件导入规则 |
+| `ppm tui` | - | 显式启动 TUI |
+| `ppm version` | `ver` | 打印版本号 |
+
+**Flag**
+
+| 长写 | 短写 | 适用命令 |
+|---|---|---|
+| `--listen` | `-l` | `add`、`edit` |
+| `--connect` | `-c` | `add`、`edit` |
+| `--note` | `-n` | `add`、`edit` |
+| `--json` | `-j` | `list`、`test` |
+
+**常用示例**
+
+```bash
+ppm ls -j                              # JSON 格式列出所有规则
+
+ppm add :8080 10.0.0.1:80              # 等同于 0.0.0.0:8080 → 10.0.0.1:80
+ppm add :3000 10.0.0.1:3000 web        # 带备注
+ppm add -l :8080 -c 10.0.0.1:80 -n web # 同上，使用 flag 形式
+
+ppm edit :8080 -c 10.0.0.2:80          # 修改转发目标（监听地址不变）
+ppm edit :8080 :9090 10.0.0.2:80       # 同时修改监听地址和转发目标
+
+ppm del :8080                          # 删除单条规则
+ppm del :8080 :9090 :3000              # 批量删除多条规则
+
+ppm test :8080                         # 测试单条规则连通性
+ppm test -a                            # 测试所有规则
+
+ppm export -o backup.json              # 导出到指定文件
+ppm import backup.json                 # 从备份文件导入（去重）
+```
+
 ## 数据位置
 
 - 备注与备份文件：`%APPDATA%\ppm\`
