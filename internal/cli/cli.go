@@ -4,10 +4,21 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/urfave/cli/v2"
 
 	"github.com/wmy2981/ppm/internal/netsh"
 	"github.com/wmy2981/ppm/internal/store"
+)
+
+var (
+	styleHeader  = lipgloss.NewStyle().Bold(true)
+	styleListen  = lipgloss.NewStyle().Foreground(lipgloss.Color("14")) // cyan
+	styleConnect = lipgloss.NewStyle().Foreground(lipgloss.Color("10")) // green
+	styleNote    = lipgloss.NewStyle().Foreground(lipgloss.Color("15")) // white
+	styleOK      = lipgloss.NewStyle().Foreground(lipgloss.Color("10")) // green
+	styleFail    = lipgloss.NewStyle().Foreground(lipgloss.Color("9"))  // red
+	styleSuccess = lipgloss.NewStyle().Foreground(lipgloss.Color("10")) // green
 )
 
 var version string
@@ -196,6 +207,7 @@ func leftoverFlags(args []string, flagNames ...string) (positionals []string, fl
 
 func printTable(rules []netsh.Rule, notes map[string]string) {
 	const colGap = 2
+	gap := strings.Repeat(" ", colGap)
 	widths := [3]int{len("LISTEN"), len("CONNECT"), len("NOTE")}
 	type row struct{ listen, connect, note string }
 	rows := make([]row, len(rules))
@@ -215,9 +227,15 @@ func printTable(rules []netsh.Rule, notes map[string]string) {
 			widths[2] = l
 		}
 	}
-	fmt.Printf("%-*s%s%-*s%s%-*s\n", widths[0], "LISTEN", strings.Repeat(" ", colGap), widths[1], "CONNECT", strings.Repeat(" ", colGap), widths[2], "NOTE")
+	fmt.Printf("%s%s%s%s%s\n",
+		styleHeader.Width(widths[0]).Render("LISTEN"), gap,
+		styleHeader.Width(widths[1]).Render("CONNECT"), gap,
+		styleHeader.Width(widths[2]).Render("NOTE"))
 	for _, r := range rows {
-		fmt.Printf("%-*s%s%-*s%s%-*s\n", widths[0], r.listen, strings.Repeat(" ", colGap), widths[1], r.connect, strings.Repeat(" ", colGap), widths[2], r.note)
+		fmt.Printf("%s%s%s%s%s\n",
+			styleListen.Width(widths[0]).Render(r.listen), gap,
+			styleConnect.Width(widths[1]).Render(r.connect), gap,
+			styleNote.Width(widths[2]).Render(r.note))
 	}
 }
 

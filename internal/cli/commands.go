@@ -112,7 +112,7 @@ func addAction(c *cli.Context) error {
 			_ = st.SaveNotes(notes)
 		}
 	}
-	fmt.Printf("Added rule: %s -> %s\n", r.Key(), r.Target())
+	fmt.Printf("%s Added rule: %s -> %s\n", styleSuccess.Render("✓"), r.Key(), r.Target())
 	return nil
 }
 
@@ -205,7 +205,7 @@ func editAction(c *cli.Context) error {
 	delete(notes, old.Key())
 	notes[created.Key()] = newNote
 	_ = st.SaveNotes(notes)
-	fmt.Printf("Edited rule: %s -> %s\n", old.Key(), created.Key())
+	fmt.Printf("%s Edited rule: %s -> %s\n", styleSuccess.Render("✓"), old.Key(), created.Key())
 	return nil
 }
 
@@ -230,7 +230,7 @@ func deleteAction(c *cli.Context) error {
 	}
 	delete(notes, r.Key())
 	_ = st.SaveNotes(notes)
-	fmt.Printf("Deleted rule: %s\n", r.Key())
+	fmt.Printf("%s Deleted rule: %s\n", styleSuccess.Render("✓"), r.Key())
 	return nil
 }
 
@@ -276,9 +276,9 @@ func testAction(c *cli.Context) error {
 		results = append(results, res)
 		if !c.Bool("json") {
 			if res.Error != "" {
-				fmt.Printf("%s -> %s: FAIL (%s)\n", res.Listen, res.Target, res.Error)
+				fmt.Printf("%s -> %s: %s\n", res.Listen, res.Target, styleFail.Render("FAIL ("+res.Error+")"))
 			} else {
-				fmt.Printf("%s -> %s: OK (%s)\n", res.Listen, res.Target, res.Latency)
+				fmt.Printf("%s -> %s: %s\n", res.Listen, res.Target, styleOK.Render("OK ("+res.Latency+")"))
 			}
 		}
 	}
@@ -320,14 +320,14 @@ func exportAction(c *cli.Context) error {
 		if err := os.WriteFile(output, data, 0o644); err != nil {
 			return err
 		}
-		fmt.Printf("Exported %d rules to %s\n", len(rules), output)
+		fmt.Printf("%s Exported %d rules to %s\n", styleSuccess.Render("✓"), len(rules), output)
 		return nil
 	}
 	path, err := st.Export(rules, notes)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Exported %d rules to %s\n", len(rules), path)
+	fmt.Printf("%s Exported %d rules to %s\n", styleSuccess.Render("✓"), len(rules), path)
 	return nil
 }
 
@@ -347,7 +347,7 @@ func importAction(c *cli.Context) error {
 	for _, w := range warnings {
 		fmt.Fprintln(os.Stderr, "warning:", w)
 	}
-	fmt.Printf("Imported: %d created, %d skipped, %d failed\n", res.Created, res.Skipped, res.Failed)
+	fmt.Printf("%s Imported: %d created, %d skipped, %d failed\n", styleSuccess.Render("✓"), res.Created, res.Skipped, res.Failed)
 	return nil
 }
 
