@@ -21,17 +21,25 @@ go build -trimpath -ldflags "-s -w -X main.version=$(cat VERSION)" -o ppm.exe ./
 
 No test suite exists (`_test.go` files are absent). No linter config is present.
 
+## CLI Commands
+
+ppm supports both a TUI and CLI modes. Running `ppm` with no arguments launches the TUI.
+
+Positional listen args accept `:8080` (defaults to `0.0.0.0:8080`) or `ip:port`.
+Write commands (`add`/`edit`/`delete`) accept `--elevate` to trigger UAC; without it, they error if not admin.
+
 ## Critical Constraints
 
 - **Windows-only**: Uses `shell32.dll`/`user32.dll` syscalls, `netsh`, and `netstat`. Will not compile on Linux/macOS.
-- **Admin required**: The app UAC-elevates on startup; `netsh` rule changes fail without admin.
+- **Admin required**: In TUI mode, the app UAC-elevates on startup. In CLI mode, write commands (`add`/`edit`/`delete`) accept `--elevate` to trigger UAC; without it they error if not admin. `netsh` rule changes always require admin.
 - **GBK console decoding**: `netsh`/`netstat` output on Chinese Windows is GBK-encoded; the code in `internal/netsh` auto-detects and converts to UTF-8 via `golang.org/x/text`.
 - **Plain text in table cells**: Do not use ANSI-styled text inside `bubbles/table` cells — it causes column misalignment. All cell values must remain plain strings (`internal/ui/model.go`).
 
 ## Architecture
 
 ```
-cmd/ppm/main.go           — Entrypoint; calls elevate, opens store, runs Bubble Tea
+cmd/ppm/main.go           — Entrypoint; routes to TUI or CLI based on args
+internal/cli/              — urfave/cli app definition and command handlers (CLI mode)
 internal/elevate/          — UAC self-elevation via ShellExecuteW
 internal/netsh/            — netsh/netstat command wrappers; all commands have 10s timeouts
 internal/store/            — %APPDATA%\ppm persistence (notes.json + backup imports)
@@ -40,6 +48,7 @@ internal/ui/form.go        — Form, import, and delete-confirm sub-views
 ```
 
 Key behaviors:
+- **TUI ↔ CLI**: `ppm` (no args) launches TUI; `ppm <subcommand>` routes to CLI. `ppm tui` explicitly launches TUI.
 - **Edit = delete + create**: `netsh` has no in-place portproxy update; editing deletes the old rule and creates a new one, with best-effort rollback on failure.
 - **Import dedup**: Backup import skips rules whose `listenaddr:listenport` key already exists live.
 - **Connectivity test**: Dials the target with a 3-second TCP timeout.

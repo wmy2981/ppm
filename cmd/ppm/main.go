@@ -6,6 +6,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
+	"github.com/wmy2981/ppm/internal/cli"
 	"github.com/wmy2981/ppm/internal/elevate"
 	"github.com/wmy2981/ppm/internal/store"
 	"github.com/wmy2981/ppm/internal/ui"
@@ -16,6 +17,14 @@ import (
 var version = "dev"
 
 func main() {
+	if len(os.Args) > 1 {
+		runCLI()
+	} else {
+		runTUI()
+	}
+}
+
+func runTUI() {
 	elevate.ElevateOrExit()
 
 	st, err := store.Open()
@@ -24,7 +33,6 @@ func main() {
 	}
 	notes, err := st.LoadNotes()
 	if err != nil {
-		// notes are auxiliary; warn but continue with empty
 		fmt.Fprintf(os.Stderr, "warning: %v\n", err)
 		notes = map[string]string{}
 	}
@@ -32,5 +40,13 @@ func main() {
 	p := tea.NewProgram(ui.New(version, st, notes), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		elevate.Fatal("tui: %v", err)
+	}
+}
+
+func runCLI() {
+	app := cli.App(version)
+	if err := app.Run(os.Args); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }
