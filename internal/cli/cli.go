@@ -6,7 +6,6 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"github.com/wmy2981/ppm/internal/elevate"
 	"github.com/wmy2981/ppm/internal/netsh"
 	"github.com/wmy2981/ppm/internal/store"
 )
@@ -58,7 +57,6 @@ var addCmd = &cli.Command{
 		&cli.StringFlag{Name: "listen", Usage: "Listen address and port (e.g. :8080 or 192.168.1.1:8080)"},
 		&cli.StringFlag{Name: "connect", Usage: "Connect address and port (e.g. 10.0.0.1:80)"},
 		&cli.StringFlag{Name: "note", Usage: "Optional note for this rule"},
-		&cli.BoolFlag{Name: "elevate", Usage: "Request admin privileges via UAC before executing"},
 	},
 	Action: addAction,
 }
@@ -71,17 +69,13 @@ var editCmd = &cli.Command{
 		&cli.StringFlag{Name: "connect", Usage: "New connect address and port"},
 		&cli.StringFlag{Name: "note", Usage: "New note"},
 		&cli.StringFlag{Name: "listen", Usage: "New listen address and port"},
-		&cli.BoolFlag{Name: "elevate", Usage: "Request admin privileges via UAC before executing"},
 	},
 	Action: editAction,
 }
 
 var deleteCmd = &cli.Command{
-	Name:  "delete",
-	Usage: "Delete a portproxy rule",
-	Flags: []cli.Flag{
-		&cli.BoolFlag{Name: "elevate", Usage: "Request admin privileges via UAC before executing"},
-	},
+	Name:   "delete",
+	Usage:  "Delete a portproxy rule",
 	Action: deleteAction,
 }
 
@@ -105,12 +99,10 @@ var exportCmd = &cli.Command{
 }
 
 var importCmd = &cli.Command{
-	Name:  "import",
-	Usage: "Import rules from a backup file",
-	Flags: []cli.Flag{
-		&cli.BoolFlag{Name: "elevate", Usage: "Request admin privileges via UAC before executing"},
-	},
-	Action: importAction,
+	Name:      "import",
+	Usage:     "Import rules from a backup file",
+	ArgsUsage: "<filepath>",
+	Action:    importAction,
 }
 
 var tuiCmd = &cli.Command{
@@ -162,19 +154,6 @@ func openStore() (*store.Store, map[string]string, []netsh.Rule, error) {
 		return st, notes, nil, fmt.Errorf("list rules: %w", err)
 	}
 	return st, notes, rules, nil
-}
-
-func requireElevate(c *cli.Context, extra ...map[string]string) {
-	if c.Bool("elevate") {
-		elevate.ElevateOrExit()
-		return
-	}
-	for _, m := range extra {
-		if m["elevate"] == "true" {
-			elevate.ElevateOrExit()
-			return
-		}
-	}
 }
 
 // leftoverFlags extracts --key value pairs that urfave/cli missed because they

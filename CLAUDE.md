@@ -23,15 +23,15 @@ No test suite exists (`_test.go` files are absent). No linter config is present.
 
 ## CLI Commands
 
-ppm supports both a TUI and CLI modes. Running `ppm` with no arguments launches the TUI.
-
+ppm supports both TUI and CLI modes. Running `ppm` with no arguments launches the TUI; subcommands provide headless/scriptable access.
 Positional listen args accept `:8080` (defaults to `0.0.0.0:8080`) or `ip:port`.
-Write commands (`add`/`edit`/`delete`) accept `--elevate` to trigger UAC; without it, they error if not admin.
+Flags (`--listen`, `--connect`, `--note`) can be used as alternatives to positional args.
+Use `ppm <command> --help` for detailed usage.
 
 ## Critical Constraints
 
 - **Windows-only**: Uses `shell32.dll`/`user32.dll` syscalls, `netsh`, and `netstat`. Will not compile on Linux/macOS.
-- **Admin required**: In TUI mode, the app UAC-elevates on startup. In CLI mode, write commands (`add`/`edit`/`delete`) accept `--elevate` to trigger UAC; without it they error if not admin. `netsh` rule changes always require admin.
+- **Admin required**: In TUI mode, the app UAC-elevates on startup. In CLI mode, write commands require admin; `netsh` rule changes fail without admin.
 - **GBK console decoding**: `netsh`/`netstat` output on Chinese Windows is GBK-encoded; the code in `internal/netsh` auto-detects and converts to UTF-8 via `golang.org/x/text`.
 - **Plain text in table cells**: Do not use ANSI-styled text inside `bubbles/table` cells — it causes column misalignment. All cell values must remain plain strings (`internal/ui/model.go`).
 

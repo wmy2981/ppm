@@ -46,8 +46,7 @@ func listAction(c *cli.Context) error {
 
 func addAction(c *cli.Context) error {
 	// Extract positionals and leftover flags from c.Args() (handles flags after positional args).
-	positionals, extra := leftoverFlags(c.Args().Slice(), "listen", "connect", "note", "elevate")
-	requireElevate(c, extra)
+	positionals, extra := leftoverFlags(c.Args().Slice(), "listen", "connect", "note")
 
 	// Resolve listen: positional[0] > --listen flag > extra --listen
 	var listenArg string
@@ -137,8 +136,7 @@ func editAction(c *cli.Context) error {
 	}
 
 	// Extract positionals and leftover flags from ALL args (handles flags after positional args).
-	positionals, extra := leftoverFlags(c.Args().Slice(), "listen", "connect", "note", "elevate")
-	requireElevate(c, extra)
+	positionals, extra := leftoverFlags(c.Args().Slice(), "listen", "connect", "note")
 	// positionals[0] is originlisten (already parsed above); remaining are new values.
 	positionals = positionals[1:]
 
@@ -212,7 +210,6 @@ func editAction(c *cli.Context) error {
 }
 
 func deleteAction(c *cli.Context) error {
-	requireElevate(c)
 	if c.NArg() < 1 {
 		return fmt.Errorf("usage: ppm delete <listen>")
 	}
@@ -335,7 +332,6 @@ func exportAction(c *cli.Context) error {
 }
 
 func importAction(c *cli.Context) error {
-	requireElevate(c)
 	if c.NArg() < 1 {
 		return fmt.Errorf("usage: ppm import <filepath>")
 	}
