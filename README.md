@@ -19,7 +19,7 @@
 **通过Powershell安装：**
 
 ```powershell
-Invoke-WebRequest -Uri "https://github.com/wmy2981/ppm/releases/download/v0.1.0/ppm-v0.1.0-windows-amd64.exe" -OutFile ppm.exe; $path = [Environment]::GetEnvironmentVariable("Path", "User"); if ($path -notlike "*$PWD*") { [Environment]::SetEnvironmentVariable("Path", "$path;$PWD", "User") }; $env:Path = "$env:Path;$PWD"
+$v = (Invoke-RestMethod "https://api.github.com/repos/wmy2981/ppm/releases/latest").tag_name -replace '^v',''; Invoke-WebRequest -Uri "https://github.com/wmy2981/ppm/releases/download/v$v/ppm-v$v-windows-amd64.exe" -OutFile ppm.exe; $path = [Environment]::GetEnvironmentVariable("Path", "User"); if ($path -notlike "*$PWD*") { [Environment]::SetEnvironmentVariable("Path", "$path;$PWD", "User") }; $env:Path = "$env:Path;$PWD"
 ```
 
 **自行构建：**
