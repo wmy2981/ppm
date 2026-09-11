@@ -42,6 +42,7 @@
     <text x="1044" y="163" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="17" fill="#E6EDF3">10.0.0.1:80</text>
     <line x1="866" y1="155" x2="934" y2="155" stroke="#5F5FD7" stroke-width="2" marker-end="url(#arw)"/>
     <text x="902" y="228" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#6E7681">netsh interface portproxy v4tov4</text>
-    <text x="902" y="258" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="15" fill="#A5B4FC">❯ ppm add :8080 10.0.0.1:80</text>
+    <path d="M785 246 L792 252.5 L785 259" fill="none" stroke="#A5B4FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="803" y="258" font-family="ui-monospace, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="15" fill="#A5B4FC">ppm add :8080 10.0.0.1:80</text>
   </g>
 </svg>

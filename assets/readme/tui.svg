@@ -62,6 +62,6 @@
 
     <!-- help + status lines -->
     <text x="68" y="388" font-size="16" fill="#6E7681">a:add  e:edit  d:del  t:test  T:test-all  E:export  I:import  r:refresh  q:quit</text>
-    <text x="68" y="418" font-size="16" fill="#3FB950">✓ exported to C:\Users\you\AppData\Roaming\ppm\backup-20260911-1030.json</text>
+    <text x="68" y="418" font-size="16" fill="#3FB950">exported to C:\Users\you\AppData\Roaming\ppm\backup-20260911-1030.json</text>
   </g>
 </svg>

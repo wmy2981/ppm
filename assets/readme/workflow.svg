@@ -56,6 +56,6 @@
 
   <!-- one-line install -->
   <rect x="56" y="232" width="1088" height="46" rx="10" fill="#0F151E" stroke="#262D3A"/>
-  <text x="76" y="262" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="16" fill="#3FB950">❯</text>
+  <path d="M76 250 L84 257 L76 264" fill="none" stroke="#3FB950" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
   <text x="100" y="261" font-family="ui-monospace, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="15" fill="#C9D1D9">iwr https://github.com/wmy2981/ppm/releases/latest/download/ppm.exe -OutFile ppm.exe</text>
 </svg>
