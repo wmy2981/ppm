@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400" role="img" aria-labelledby="cliTitle cliDesc">
+  <title id="cliTitle">ppm 的命令行模式</title>
+  <desc id="cliDesc">命令行输出：ppm ls 列出 LISTEN、CONNECT、NOTE 三列，监听地址为青色、目标地址为绿色、备注为白色；ppm test --all 逐条测试目标连通性，成功为绿色 OK (3ms)，失败为红色 FAIL (i/o timeout)。</desc>
+
+  <rect width="1200" height="400" rx="24" fill="#0B0E14"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="398.5" rx="23.25" fill="none" stroke="#1C2430" stroke-width="1.5"/>
+
+  <rect x="44" y="40" width="1112" height="330" rx="14" fill="#0F151E" stroke="#262D3A" stroke-width="1.5"/>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="17">
+    <!-- ppm ls -->
+    <text x="68" y="78" fill="#3FB950">❯</text>
+    <text x="96" y="78" fill="#E6EDF3">ppm ls</text>
+
+    <g font-weight="700">
+      <text x="68" y="110" fill="#8B949E">LISTEN</text>
+      <text x="212" y="110" fill="#8B949E">CONNECT</text>
+      <text x="416" y="110" fill="#8B949E">NOTE</text>
+    </g>
+
+    <text x="68" y="142" fill="#22D3EE">0.0.0.0:8080</text>
+    <text x="212" y="142" fill="#3FB950">10.0.0.1:80</text>
+    <text x="416" y="142" fill="#FFFFFF">web</text>
+
+    <text x="68" y="174" fill="#22D3EE">0.0.0.0:3389</text>
+    <text x="212" y="174" fill="#3FB950">192.168.1.100:3389</text>
+    <text x="416" y="174" fill="#FFFFFF">rdp</text>
+
+    <text x="68" y="206" fill="#22D3EE">0.0.0.0:2222</text>
+    <text x="212" y="206" fill="#3FB950">172.20.0.5:22</text>
+    <text x="416" y="206" fill="#FFFFFF">wsl-ssh</text>
+
+    <!-- ppm test, all rules -->
+    <text x="68" y="238" fill="#3FB950">❯</text>
+    <text x="96" y="238" fill="#E6EDF3">ppm test --all</text>
+
+    <text x="68" y="270" fill="#C9D1D9">0.0.0.0:8080 -&gt; 10.0.0.1:80:</text>
+    <text x="456" y="270" fill="#3FB950">OK (3ms)</text>
+
+    <text x="68" y="302" fill="#C9D1D9">0.0.0.0:3389 -&gt; 192.168.1.100:3389:</text>
+    <text x="456" y="302" fill="#3FB950">OK (12ms)</text>
+
+    <text x="68" y="334" fill="#C9D1D9">0.0.0.0:2222 -&gt; 172.20.0.5:22:</text>
+    <text x="456" y="334" fill="#F85149">✗ FAIL (i/o timeout)</text>
+  </g>
+</svg>

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="heroTitle heroDesc">
+  <title id="heroTitle">ppm — Windows Portproxy Manager</title>
+  <desc id="heroDesc">ppm 用 k9s 风格的终端界面管理 Windows netsh interface portproxy 端口转发规则，示例为 0.0.0.0:8080 转发到 10.0.0.1:80。</desc>
+
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#5F5FD7"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="320" rx="24" fill="#0B0E14"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="318.5" rx="23.25" fill="none" stroke="#1C2430" stroke-width="1.5"/>
+
+  <!-- identity -->
+  <g id="identity">
+    <text x="56" y="74" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="15" letter-spacing="2.4" fill="#8B949E">WINDOWS · NETSH INTERFACE PORTPROXY</text>
+    <text x="56" y="162" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="84" font-weight="700" fill="#E6EDF3">ppm</text>
+    <text x="58" y="200" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="21" fill="#A5B4FC">Portproxy Manager</text>
+    <text x="56" y="246" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="19" fill="#C9D1D9">用 k9s 风格的终端界面管理 Windows 端口转发规则</text>
+
+    <g id="chips">
+      <rect x="56" y="262" width="45" height="28" rx="14" fill="#111823" stroke="#232C3A"/>
+      <text x="78.5" y="281" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#8B949E">Go</text>
+      <rect x="111" y="262" width="112" height="28" rx="14" fill="#111823" stroke="#232C3A"/>
+      <text x="167" y="281" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#8B949E">Bubble Tea</text>
+      <rect x="233" y="262" width="53" height="28" rx="14" fill="#111823" stroke="#232C3A"/>
+      <text x="259.5" y="281" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#8B949E">MIT</text>
+      <rect x="296" y="262" width="87" height="28" rx="14" fill="#111823" stroke="#232C3A"/>
+      <text x="339.5" y="281" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#8B949E">Windows</text>
+      <rect x="393" y="262" width="78" height="28" rx="14" fill="#111823" stroke="#232C3A"/>
+      <text x="432" y="281" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#8B949E">v0.2.2</text>
+    </g>
+  </g>
+
+  <!-- the thing the tool actually does: one portproxy rule -->
+  <g id="forward">
+    <text x="760" y="104" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" letter-spacing="1.6" fill="#6E7681">LISTEN</text>
+    <text x="1044" y="104" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" letter-spacing="1.6" fill="#6E7681">CONNECT</text>
+    <rect x="660" y="120" width="200" height="70" rx="12" fill="#111823" stroke="#2E3A4A"/>
+    <rect x="944" y="120" width="200" height="70" rx="12" fill="#111823" stroke="#2E3A4A"/>
+    <text x="760" y="163" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="17" fill="#E6EDF3">0.0.0.0:8080</text>
+    <text x="1044" y="163" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="17" fill="#E6EDF3">10.0.0.1:80</text>
+    <line x1="866" y1="155" x2="934" y2="155" stroke="#5F5FD7" stroke-width="2" marker-end="url(#arw)"/>
+    <text x="902" y="228" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#6E7681">netsh interface portproxy v4tov4</text>
+    <text x="902" y="258" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="15" fill="#A5B4FC">❯ ppm add :8080 10.0.0.1:80</text>
+  </g>
+</svg>

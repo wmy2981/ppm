@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="wfTitle wfDesc">
+  <title id="wfTitle">从下载到第一条规则</title>
+  <desc id="wfDesc">四步流程：从 GitHub Releases 下载 windows-amd64.exe；运行 ppm.exe 时自动通过 UAC 提权；用 TUI 或 CLI 管理规则；结果落到 netsh interface portproxy，备注与备份存在 %APPDATA%\ppm。</desc>
+
+  <defs>
+    <marker id="arw2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#3A4453"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="320" rx="24" fill="#0B0E14"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="318.5" rx="23.25" fill="none" stroke="#1C2430" stroke-width="1.5"/>
+
+  <text x="56" y="64" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" letter-spacing="2" fill="#8B949E">GETTING STARTED · 四步</text>
+
+  <!-- arrows -->
+  <g stroke="#3A4453" stroke-width="1.6" marker-end="url(#arw2)">
+    <line x1="290" y1="148" x2="336" y2="148"/>
+    <line x1="576" y1="148" x2="622" y2="148"/>
+    <line x1="862" y1="148" x2="908" y2="148"/>
+  </g>
+
+  <!-- nodes -->
+  <g>
+    <rect x="56" y="92" width="230" height="112" rx="12" fill="#111823" stroke="#262D3A"/>
+    <rect x="74" y="110" width="26" height="26" rx="7" fill="#1B2430" stroke="#2E3A4A"/>
+    <text x="87" y="129" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#A5B4FC">1</text>
+    <text x="112" y="131" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="19" fill="#E6EDF3">下载</text>
+    <text x="74" y="166" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#8B949E">GitHub Releases</text>
+    <text x="74" y="188" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#6E7681">windows-amd64.exe</text>
+  </g>
+  <g>
+    <rect x="342" y="92" width="230" height="112" rx="12" fill="#111823" stroke="#262D3A"/>
+    <rect x="360" y="110" width="26" height="26" rx="7" fill="#1B2430" stroke="#2E3A4A"/>
+    <text x="373" y="129" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#A5B4FC">2</text>
+    <text x="398" y="131" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="19" fill="#E6EDF3">运行</text>
+    <text x="360" y="166" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#8B949E">ppm.exe</text>
+    <text x="360" y="188" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#6E7681">自动 UAC 提权重启</text>
+  </g>
+  <g>
+    <rect x="628" y="92" width="230" height="112" rx="12" fill="#111823" stroke="#262D3A"/>
+    <rect x="646" y="110" width="26" height="26" rx="7" fill="#1B2430" stroke="#2E3A4A"/>
+    <text x="659" y="129" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#A5B4FC">3</text>
+    <text x="684" y="131" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="19" fill="#E6EDF3">管理</text>
+    <text x="646" y="166" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#8B949E">TUI 或 CLI</text>
+    <text x="646" y="188" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#6E7681">a e d t T E I r q</text>
+  </g>
+  <g>
+    <rect x="914" y="92" width="230" height="112" rx="12" fill="#111823" stroke="#262D3A"/>
+    <rect x="932" y="110" width="26" height="26" rx="7" fill="#1B2430" stroke="#2E3A4A"/>
+    <text x="945" y="129" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#A5B4FC">4</text>
+    <text x="970" y="131" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="19" fill="#E6EDF3">落地</text>
+    <text x="932" y="166" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#8B949E">netsh + notes.json</text>
+    <text x="932" y="188" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#6E7681">%APPDATA%\ppm</text>
+  </g>
+
+  <!-- one-line install -->
+  <rect x="56" y="232" width="1088" height="46" rx="10" fill="#0F151E" stroke="#262D3A"/>
+  <text x="76" y="262" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="16" fill="#3FB950">❯</text>
+  <text x="100" y="261" font-family="ui-monospace, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="15" fill="#C9D1D9">iwr https://github.com/wmy2981/ppm/releases/latest/download/ppm.exe -OutFile ppm.exe</text>
+</svg>

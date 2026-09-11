@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="480" viewBox="0 0 1200 480" role="img" aria-labelledby="tuiTitle tuiDesc">
+  <title id="tuiTitle">ppm 的 TUI 界面</title>
+  <desc id="tuiDesc">终端界面：标题栏 PPM · PORTPROXY MANAGER v0.2.2（Admin OK，5 rules, 3 listening）；表格五列为 LISTEN、CONNECT、NOTE、TEST、STATE，监听状态以绿色 up / 红色 DOWN 标注；底部为快捷键提示行与状态行。</desc>
+
+  <rect width="1200" height="480" rx="24" fill="#0B0E14"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="478.5" rx="23.25" fill="none" stroke="#1C2430" stroke-width="1.5"/>
+
+  <rect x="44" y="40" width="1112" height="396" rx="14" fill="#0F151E" stroke="#262D3A" stroke-width="1.5"/>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'DejaVu Sans Mono', monospace">
+    <!-- title bar -->
+    <rect x="68" y="58" width="340" height="32" rx="7" fill="#5F5FD7"/>
+    <text x="84" y="81" font-size="16" font-weight="600" fill="#FFFFFF">PPM · PORTPROXY MANAGER v0.2.2</text>
+    <text x="436" y="81" font-size="16" fill="#3FB950">[Admin OK]</text>
+    <text x="566" y="81" font-size="15" fill="#6E7681">5 rules, 3 listening</text>
+
+    <!-- table header -->
+    <g font-size="15" letter-spacing="0.8" fill="#8B949E">
+      <text x="68" y="136">LISTEN</text>
+      <text x="268" y="136">CONNECT</text>
+      <text x="556" y="136">NOTE</text>
+      <text x="856" y="136">TEST</text>
+      <text x="1036" y="136">STATE</text>
+    </g>
+    <line x1="68" y1="150" x2="1132" y2="150" stroke="#262D3A" stroke-width="1"/>
+
+    <!-- selected row -->
+    <rect x="60" y="190" width="1080" height="40" rx="7" fill="#232C3A"/>
+
+    <!-- rows -->
+    <g font-size="16">
+      <text x="68" y="178" fill="#E6EDF3">0.0.0.0:8080</text>
+      <text x="268" y="178" fill="#E6EDF3">10.0.0.1:80</text>
+      <text x="556" y="178" fill="#8B949E">web</text>
+      <text x="856" y="178" fill="#8B949E">3 ms</text>
+      <text x="1036" y="178" fill="#3FB950">up</text>
+
+      <text x="68" y="218" fill="#FFFFFF">0.0.0.0:3389</text>
+      <text x="268" y="218" fill="#FFFFFF">192.168.1.100:3389</text>
+      <text x="556" y="218" fill="#C9D1D9">rdp</text>
+      <text x="856" y="218" fill="#C9D1D9">12 ms</text>
+      <text x="1036" y="218" fill="#3FB950">up</text>
+
+      <text x="68" y="258" fill="#E6EDF3">0.0.0.0:2222</text>
+      <text x="268" y="258" fill="#E6EDF3">172.20.0.5:22</text>
+      <text x="556" y="258" fill="#8B949E">wsl-ssh</text>
+      <text x="856" y="258" fill="#8B949E">1 ms</text>
+      <text x="1036" y="258" fill="#3FB950">up</text>
+
+      <text x="68" y="298" fill="#E6EDF3">0.0.0.0:5432</text>
+      <text x="268" y="298" fill="#E6EDF3">10.0.0.9:5432</text>
+      <text x="556" y="298" fill="#8B949E">pg</text>
+      <text x="856" y="298" fill="#D29922">timeout</text>
+      <text x="1036" y="298" fill="#F85149">DOWN</text>
+
+      <text x="68" y="338" fill="#E6EDF3">127.0.0.1:9090</text>
+      <text x="268" y="338" fill="#E6EDF3">10.0.0.3:9090</text>
+      <text x="556" y="338" fill="#8B949E">metrics</text>
+      <text x="856" y="338" fill="#6E7681">—</text>
+      <text x="1036" y="338" fill="#F85149">DOWN</text>
+    </g>
+
+    <!-- help + status lines -->
+    <text x="68" y="388" font-size="16" fill="#6E7681">a:add  e:edit  d:del  t:test  T:test-all  E:export  I:import  r:refresh  q:quit</text>
+    <text x="68" y="418" font-size="16" fill="#3FB950">✓ exported to C:\Users\you\AppData\Roaming\ppm\backup-20260911-1030.json</text>
+  </g>
+</svg>
