@@ -38,13 +38,19 @@
 
 ## 快速开始
 
-从 [Releases](https://github.com/wmy2981/ppm/releases) 下载 `ppm-v<版本>-windows-amd64.exe`，改名为 `ppm.exe` 放到任意目录即可运行。
-
-PowerShell 一条命令下载最新版并加入用户 PATH：
+PowerShell 一条命令安装最新版到 `%APPDATA%\ppm` 并加入用户 PATH：
 
 ```powershell
-$v = (Invoke-RestMethod "https://api.github.com/repos/wmy2981/ppm/releases/latest").tag_name -replace '^v',''; Invoke-WebRequest -Uri "https://github.com/wmy2981/ppm/releases/download/v$v/ppm-v$v-windows-amd64.exe" -OutFile ppm.exe; $path = [Environment]::GetEnvironmentVariable("Path", "User"); if ($path -notlike "*$PWD*") { [Environment]::SetEnvironmentVariable("Path", "$path;$PWD", "User") }; $env:Path = "$env:Path;$PWD"
+irm https://raw.githubusercontent.com/wmy2981/ppm/main/scripts/install.ps1 | iex
 ```
+
+脚本写入前会逐项确认；GitHub 访问慢时会询问是否启用加速镜像（默认不启用）；已安装则原地覆盖，重跑同一条命令即可升级。卸载：
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/wmy2981/ppm/main/scripts/install.ps1))) -Action uninstall
+```
+
+也可以手动安装：从 [Releases](https://github.com/wmy2981/ppm/releases) 下载 `ppm-v<版本>-windows-amd64.exe`，改名为 `ppm.exe` 放到任意目录即可运行。
 
 自行构建（需要 Go 1.26）：
 

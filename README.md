@@ -38,13 +38,19 @@
 
 ## Quick start
 
-Download `ppm-v<version>-windows-amd64.exe` from [Releases](https://github.com/wmy2981/ppm/releases), rename it to `ppm.exe`, and run it from any directory.
-
-One PowerShell command to download the latest release and add it to your user PATH:
+One PowerShell command installs the latest release into `%APPDATA%\ppm` and adds it to your user PATH:
 
 ```powershell
-$v = (Invoke-RestMethod "https://api.github.com/repos/wmy2981/ppm/releases/latest").tag_name -replace '^v',''; Invoke-WebRequest -Uri "https://github.com/wmy2981/ppm/releases/download/v$v/ppm-v$v-windows-amd64.exe" -OutFile ppm.exe; $path = [Environment]::GetEnvironmentVariable("Path", "User"); if ($path -notlike "*$PWD*") { [Environment]::SetEnvironmentVariable("Path", "$path;$PWD", "User") }; $env:Path = "$env:Path;$PWD"
+irm https://raw.githubusercontent.com/wmy2981/ppm/main/scripts/install.ps1 | iex
 ```
+
+The script asks before it writes anything, offers an optional GitHub mirror when GitHub is slow (off by default), and overwrites an existing install in place — re-run the same command to update. To uninstall:
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/wmy2981/ppm/main/scripts/install.ps1))) -Action uninstall
+```
+
+Prefer a manual install? Download `ppm-v<version>-windows-amd64.exe` from [Releases](https://github.com/wmy2981/ppm/releases), rename it to `ppm.exe`, and run it from any directory.
 
 Build from source (requires Go 1.26):
 
